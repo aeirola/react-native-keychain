@@ -217,4 +217,9 @@ CipherStorageKeystoreAESCBC implements CipherStorage {
     public void setCurrentActivity(Activity activity) {
         // AESCBC does not need the current activity
     }
+
+    @Override
+    public void setAuthenticationPrompt(AuthenticationPrompt authenticationPrompt) {
+        // AESCBC conceal does not need the authentication prompt
+    }
 }

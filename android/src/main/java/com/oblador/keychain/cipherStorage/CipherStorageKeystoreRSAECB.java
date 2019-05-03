@@ -69,6 +69,7 @@ public class CipherStorageKeystoreRSAECB extends AuthenticationCallback implemen
     private KeyguardManager mKeyguardManager;
     private ReactContext mReactContext;
     private Activity mActivity;
+    private AuthenticationPrompt authenticationPrompt;
 
     class CipherDecryptionParams {
         public final DecryptionResultHandler resultHandler;
@@ -140,11 +141,29 @@ public class CipherStorageKeystoreRSAECB extends AuthenticationCallback implemen
         mBiometricPrompt = new BiometricPrompt(mActivity, Executors.newSingleThreadExecutor(), this);
         mBiometricPromptCancellationSignal = new CancellationSignal();
 
-        PromptInfo promptInfo = new PromptInfo.Builder()
-                .setTitle("Authentication required")
-                .setNegativeButtonText("Cancel")
-                .setSubtitle("Please use biometric authentication to unlock the app")
-                .build();
+        final PromptInfo promptInfo;
+        if (this.authenticationPrompt != null) {
+            PromptInfo.Builder prompInfoBuilder = new PromptInfo.Builder();
+            if (this.authenticationPrompt.title != null) {
+                prompInfoBuilder.setTitle(this.authenticationPrompt.title );
+            }
+            if (this.authenticationPrompt.subTitle != null) {
+                prompInfoBuilder.setSubtitle(this.authenticationPrompt.subTitle );
+            }
+            if (this.authenticationPrompt.description != null) {
+                prompInfoBuilder.setDescription(this.authenticationPrompt.description  );
+            }
+            if (this.authenticationPrompt.cancel != null) {
+                prompInfoBuilder.setNegativeButtonText(this.authenticationPrompt.cancel );
+            }
+            promptInfo = prompInfoBuilder.build();
+        } else {
+            promptInfo = new PromptInfo.Builder()
+                    .setTitle("Authentication required")
+                    .setNegativeButtonText("Cancel")
+                    .setSubtitle("Please use biometric authentication to unlock the app")
+                    .build();
+        }
 
         mBiometricPrompt.authenticate(promptInfo);
         mReactContext.addLifecycleEventListener(mBiometricPrompt);
@@ -344,5 +363,10 @@ public class CipherStorageKeystoreRSAECB extends AuthenticationCallback implemen
     @Override
     public void setCurrentActivity(Activity activity) {
       mActivity = activity;
+    }
+
+    @Override
+    public void setAuthenticationPrompt(AuthenticationPrompt authenticationPrompt) {
+        this.authenticationPrompt = authenticationPrompt;
     }
 }

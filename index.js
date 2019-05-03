@@ -111,14 +111,32 @@ export function setInternetCredentials(
 /**
  * Fetches login combination for `server`.
  * @param {string} server URL to server.
- * @param {object} options Keychain options, iOS only
+ * @param {object} options Keychain options
  * @return {Promise} Resolves to `{ server, username, password }` when successful
  */
 export function getInternetCredentials(
   server: string,
   options?: Options
 ): Promise {
-  return RNKeychainManager.getInternetCredentialsForServer(server, options);
+  const normalizedOptions = options;
+  if (typeof options === 'object') {
+    if (Platform.OS === 'android' && typeof options.authenticationPrompt === 'string') {
+      normalizedOptions = {
+        ...options,
+        authenticationPrompt: {
+          title: options.authenticationPrompt,
+          cancel: 'Cancel',
+        }
+      };
+    } else if (Platform.OS === 'ios' && typeof options.authenticationPrompt === 'object') {
+      normalizedOptions = {
+        ...options,
+        authenticationPrompt: options.authenticationPrompt.title,
+      };
+    }
+  }
+
+  return RNKeychainManager.getInternetCredentialsForServer(server, normalizedOptions);
 }
 
 /**

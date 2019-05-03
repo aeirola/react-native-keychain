@@ -105,7 +105,7 @@ public class KeychainModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getGenericPasswordForOptions(String service, final Promise promise) {
+    public void getGenericPasswordForOptions(String service, ReadableMap options, final Promise promise) {
         final String defaultService = getDefaultServiceIfNull(service);
         CipherStorage cipherStorage = null;
         try {
@@ -130,6 +130,16 @@ public class KeychainModule extends ReactContextBaseJavaModule {
 
             final CipherStorage currentCipherStorage = cipherStorage;
             if (currentCipherStorage != null) {
+                if (options != null && options.hasKey("authenticationPrompt")) {
+                    ReadableMap authenticationPrompt = options.getMap("authenticationPrompt");
+                    currentCipherStorage.setAuthenticationPrompt(new CipherStorage.AuthenticationPrompt(
+                            authenticationPrompt.hasKey("title") ? authenticationPrompt.getString("title") : null,
+                            authenticationPrompt.hasKey("subTitle") ? authenticationPrompt.getString("subTitle") : null,
+                            authenticationPrompt.hasKey("description") ? authenticationPrompt.getString("description") : null,
+                            authenticationPrompt.hasKey("cancel") ? authenticationPrompt.getString("cancel") : null
+                    ));
+                }
+
                 DecryptionResultHandler decryptionHandler = new DecryptionResultHandler() {
                     @Override
                     public void onDecrypt(DecryptionResult decryptionResult, String error) {
@@ -230,8 +240,8 @@ public class KeychainModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getInternetCredentialsForServer(@NonNull String server, ReadableMap unusedOptions, Promise promise) {
-        getGenericPasswordForOptions(server, promise);
+    public void getInternetCredentialsForServer(@NonNull String server, ReadableMap options, Promise promise) {
+        getGenericPasswordForOptions(server, options, promise);
     }
 
     @ReactMethod

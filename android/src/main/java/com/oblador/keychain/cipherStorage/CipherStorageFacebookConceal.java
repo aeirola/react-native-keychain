@@ -111,4 +111,9 @@ public class CipherStorageFacebookConceal implements CipherStorage {
     public void setCurrentActivity(Activity activity) {
         // Facebook conceal does not need the current activity
     }
+
+    @Override
+    public void setAuthenticationPrompt(AuthenticationPrompt authenticationPrompt) {
+        // Facebook conceal does not need the authentication prompt
+    }
 }

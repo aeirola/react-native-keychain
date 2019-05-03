@@ -40,7 +40,12 @@ declare module 'react-native-keychain' {
         accessControl?: SecAccessControl;
         accessGroup?: string;
         accessible?: SecAccessible;
-        authenticationPrompt?: string;
+        authenticationPrompt?: string | {
+            title: string;
+            subTitle?: string;
+            description?: string;
+            cancel: string;
+        };
         authenticationType?: LAPolicy;
         service?: string;
     }
@@ -60,7 +65,8 @@ declare module 'react-native-keychain' {
     ): Promise<void>;
 
     function getInternetCredentials(
-        server: string
+        server: string,
+        options?: Options
     ): Promise<UserCredentials>;
 
     function resetInternetCredentials(
